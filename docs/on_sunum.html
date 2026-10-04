@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Otomatik Zafiyet Tarayıcı - Ön Sunum</title>
+<style>
+  @page { size: 297mm 167mm; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: #1f2937; }
+  .slide { width: 297mm; height: 167mm; padding: 14mm 18mm; page-break-after: always; overflow: hidden; background: #fff; position: relative; }
+  .slide:last-child { page-break-after: auto; }
+  .slide::before { content: ""; position: absolute; left: 0; top: 0; width: 6mm; height: 100%; background: #1d4ed8; }
+  h1 { font-size: 30pt; margin: 0 0 6mm; color: #1d4ed8; }
+  h2 { font-size: 22pt; margin: 0 0 6mm; color: #1d4ed8; }
+  li { font-size: 14pt; margin-bottom: 3mm; line-height: 1.35; }
+  .title { display: flex; flex-direction: column; justify-content: center; }
+  .title h1 { font-size: 36pt; }
+  .sub { font-size: 16pt; color: #4b5563; }
+  table { border-collapse: collapse; font-size: 13pt; }
+  td, th { border: 1px solid #cbd5e1; padding: 2mm 5mm; text-align: left; }
+  th { background: #e0e7ff; }
+  pre { background: #f1f5f9; padding: 5mm; font-size: 12pt; border-radius: 3mm; }
+  .warn { background: #fef3c7; border-left: 2mm solid #f59e0b; padding: 4mm; font-size: 13pt; margin-top: 4mm; }
+  /* Gantt */
+  .g-row { display: flex; align-items: center; height: 6.4mm; }
+  .g-label { width: 62mm; font-size: 9pt; white-space: nowrap; overflow: hidden; }
+  .g-track { position: relative; flex: 1; height: 100%; border-left: 1px solid #cbd5e1;
+             background: repeating-linear-gradient(to right, #f8fafc 0, #f8fafc calc(100%/13 - 1px), #e2e8f0 calc(100%/13 - 1px), #e2e8f0 calc(100%/13)); }
+  .bar { position: absolute; top: 1.2mm; height: 4mm; border-radius: 1mm; }
+  .g-sec { font-size: 9.5pt; font-weight: 700; margin-top: 1.5mm; color: #111827; }
+  .c0 { background: #64748b; } .c1 { background: #2563eb; } .c2 { background: #16a34a; }
+  .c3 { background: #f59e0b; } .c4 { background: #9333ea; }
+  .g-head { display: flex; margin-left: 62mm; font-size: 8.5pt; color: #475569; }
+  .g-head div { flex: 1; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="slide title">
+  <h1>Otomatik Zafiyet Tarayıcı</h1>
+  <div class="sub">Yazılım Temelli Proje Geliştirme Dersi - Ön Sunum</div>
+  <div class="sub" style="margin-top:8mm">Ekip üyeleri: Mücahit Haşim İpek (1230606809), Necat Akyüz (No: ............)</div>
+  <div class="sub">Öğretim görevlisi: Ercan Buluş (unvan: ............)</div>
+  <div class="sub">Tarih: Ekim 2026</div>
+</div>
+
+<div class="slide">
+  <h2>Problem ve Motivasyon</h2>
+  <ul>
+    <li>Web uygulamalarına yönelik saldırılar sürekli artıyor.</li>
+    <li>Manuel güvenlik testi yavaş ve pahalı.</li>
+    <li>Küçük işletmeler ve geliştiriciler için basit, otomatik bir araç ihtiyacı var.</li>
+    <li>Amaç: zafiyetleri saldırgandan önce bulup kapatmak.</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h2>Zafiyet Nedir?</h2>
+  <ul>
+    <li>Tasarım, kodlama veya yapılandırma hatasından doğan güvenlik açığı.</li>
+    <li>Temel neden: kullanıcı girdisine güvenmek ve hatalı yapılandırma.</li>
+    <li>Basitten karmaşığa: bilgi ifşası, dizin listeleme, SQL Injection, XSS, CSRF, Command Injection.</li>
+    <li>Referans: OWASP Top 10, PortSwigger Web Security Academy.</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h2>Proje Amacı ve Kapsamı</h2>
+  <ul>
+    <li>Hedef web uygulamasını otomatik tarayıp zafiyetleri tespit etmek.</li>
+    <li>Bulguları risk seviyesiyle raporlamak ve düzeltme önerisi sunmak.</li>
+    <li>Kapsam: SQL Injection, XSS, açık port, güvenlik başlıkları, dizin listeleme, CVE eşleştirme.</li>
+    <li>Yaklaşım: aşamalı geliştirme, yapabildiğimiz yere kadar.</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h2>Sistem Mimarisi</h2>
+  <pre>Hedef URL -> Crawler -> Tarama Modülleri -> Risk Skorlama -> Rapor
+                          |- SQL Injection
+                          |- XSS
+                          |- Port / Başlık / Dizin
+                          |- CVE kontrolü</pre>
+  <ul><li>Modüler yapı: her zafiyet türü ayrı bir modül.</li>
+      <li>Her bulgu: tür, URL, risk seviyesi, kanıt ve düzeltme önerisi.</li></ul>
+</div>
+
+<div class="slide">
+  <h2>Teknolojiler</h2>
+  <table>
+    <tr><th>Alan</th><th>Araç</th></tr>
+    <tr><td>Dil</td><td>Python</td></tr>
+    <tr><td>HTTP / Parsing</td><td>requests, BeautifulSoup</td></tr>
+    <tr><td>Ağ</td><td>socket / python-nmap</td></tr>
+    <tr><td>CVE verisi</td><td>NVD API</td></tr>
+    <tr><td>Rapor</td><td>Jinja2 (HTML)</td></tr>
+    <tr><td>Arayüz (opsiyonel)</td><td>Flask</td></tr>
+  </table>
+</div>
+
+<div class="slide">
+  <h2 style="margin-bottom:2mm">Geliştirme Planı (Gantt) - 1 Ekim 2026 / 4 Ocak 2027</h2>
+  <div class="g-head"><div>1 Eki</div><div>8 Eki</div><div>15 Eki</div><div>22 Eki</div><div>29 Eki</div><div>5 Kas</div><div>12 Kas</div><div>19 Kas</div><div>26 Kas</div><div>3 Ara</div><div>10 Ara</div><div>17 Ara</div><div>24 Ara</div><div>31 Ara</div></div>
+
+  <div class="g-sec">Planlama</div>
+  <div class="g-row"><div class="g-label">Konu araştırması</div><div class="g-track"><div class="bar c0" style="left:0%;width:10.4%"></div></div></div>
+  <div class="g-row"><div class="g-label">Plan, Gantt, ön sunum</div><div class="g-track"><div class="bar c0" style="left:0%;width:8.3%"></div></div></div>
+  <div class="g-row"><div class="g-label">Ortam kurulumu (Python, Git, DVWA)</div><div class="g-track"><div class="bar c0" style="left:7.3%;width:5.2%"></div></div></div>
+
+  <div class="g-sec">Faz 1 - Web Tarama</div>
+  <div class="g-row"><div class="g-label">Web crawler</div><div class="g-track"><div class="bar c1" style="left:12.5%;width:10.4%"></div></div></div>
+  <div class="g-row"><div class="g-label">SQL Injection modülü</div><div class="g-track"><div class="bar c1" style="left:22.9%;width:10.4%"></div></div></div>
+  <div class="g-row"><div class="g-label">XSS modülü</div><div class="g-track"><div class="bar c1" style="left:33.3%;width:7.3%"></div></div></div>
+  <div class="g-row"><div class="g-label">CLI çıktısı ve testler</div><div class="g-track"><div class="bar c1" style="left:40.6%;width:5.2%"></div></div></div>
+
+  <div class="g-sec">Faz 2 - Ağ ve Yapılandırma</div>
+  <div class="g-row"><div class="g-label">Port tarama</div><div class="g-track"><div class="bar c2" style="left:45.8%;width:10.4%"></div></div></div>
+  <div class="g-row"><div class="g-label">HTTP başlık analizi</div><div class="g-track"><div class="bar c2" style="left:56.2%;width:5.2%"></div></div></div>
+  <div class="g-row"><div class="g-label">Dizin tarama</div><div class="g-track"><div class="bar c2" style="left:61.5%;width:7.3%"></div></div></div>
+  <div class="g-row"><div class="g-label">HTML rapor</div><div class="g-track"><div class="bar c2" style="left:68.8%;width:7.3%"></div></div></div>
+
+  <div class="g-sec">Faz 3 - CVE ve Risk</div>
+  <div class="g-row"><div class="g-label">CVE / NVD entegrasyonu</div><div class="g-track"><div class="bar c3" style="left:72.9%;width:10.4%"></div></div></div>
+  <div class="g-row"><div class="g-label">Risk skorlama</div><div class="g-track"><div class="bar c3" style="left:83.3%;width:5.2%"></div></div></div>
+  <div class="g-row"><div class="g-label">Çoklu hedef ve optimizasyon</div><div class="g-track"><div class="bar c3" style="left:88.5%;width:5.2%"></div></div></div>
+
+  <div class="g-sec">Faz 4 - Arayüz ve Teslim</div>
+  <div class="g-row"><div class="g-label">Dokümantasyon ve final testleri</div><div class="g-track"><div class="bar c4" style="left:90.6%;width:7.3%"></div></div></div>
+  <div class="g-row"><div class="g-label">Web arayüzü (opsiyonel)</div><div class="g-track"><div class="bar c4" style="left:93.7%;width:4.2%"></div></div></div>
+</div>
+
+<div class="slide">
+  <h2>Etik ve Yasal Çerçeve</h2>
+  <ul>
+    <li>Araç yalnızca izinli sistemlerde kullanılır.</li>
+    <li>Test ortamı: kendi makinemizde DVWA ve OWASP Juice Shop.</li>
+    <li>Gerçek kullanım: kapsamı belirlenmiş bug bounty programları (HackerOne, Bugcrowd).</li>
+  </ul>
+  <div class="warn">İzinsiz tarama suçtur. Araç, kullanıcıdan hedef sahipliği onayı alacaktır.</div>
+</div>
+
+<div class="slide">
+  <h2>Beklenen Çıktılar ve Riskler</h2>
+  <ul>
+    <li>Çıktılar: çalışan CLI aracı, HTML rapor, dokümantasyon, test sonuçları.</li>
+    <li>Riskler: zaman yetersizliği, yanlış pozitifler, API limitleri.</li>
+    <li>Önlemler: aşamalı geliştirme, bilinen zafiyetli uygulamalarla doğrulama.</li>
+    <li>Zaman yetmezse arayüz ve çoklu hedef desteği çıkarılır; çekirdek hedef Faz 1 ve Faz 2.</li>
+  </ul>
+</div>
+
+<div class="slide title">
+  <h1>Teşekkürler</h1>
+  <div class="sub">Sorular ve geri bildirimler</div>
+</div>
+
+</body>
+</html>
