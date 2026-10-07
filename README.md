@@ -84,6 +84,6 @@ Henüz uygulanmadı; parametreler geliştirme sırasında değişebilir.
 - [DVWA](https://github.com/digininja/DVWA)
 
 ## Ekip
-- Mücahit Haşim İpek (1230606809)
-- Necat Akyüz (numara eklenecek)
-- Danışman: Ercan Buluş (unvan eklenecek)
+- Mücahit Haşim İPEK (1230606809)
+- Necat Akyüz (1220606005)
+- Danışman: Prof. Dr. Ercan BULUŞ

@@ -1,0 +1,58 @@
+================================================================================
+🎓 HOCAYA SUNUM NOTLARI (BÖLÜM 3): HOCANIN SORABİLECEĞİ TUZAK VE KRİTİK SORULAR
+"Bu sorulara hazırlıklı olursan sunumdan tam not alırsın!"
+================================================================================
+
+1. TUZAK SORU: "Bu yazdığınız kod şu anda bir zafiyet buluyor mu? Yoksa sadece linkleri ve formları mı listeliyor?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, profesyonel bir zafiyet tarayıcısının (Burp Suite, OWASP ZAP vb.) ilk ve en
+kritik adımı Keşif ve Haritalama (Crawling / Reconnaissance) aşamasıdır.
+Bir binanın kapılarını ve pencerelerini bilmeden kilitlerini test edemezsiniz.
+Şu an tamamladığımız Faz 1'in ilk modülü, hedef sistemin 'Saldırı Yüzeyini' (Attack Surface)
+yani tüm sayfaları, formları ve parametreleri eksiksiz haritalandırdı.
+Sıradaki adımımız bu keşfedilen form ve parametrelere SQL Injection ve XSS testlerini
+uygulayan tespit modüllerini devreye almaktır."
+
+
+2. TUZAK SORU: "Bu aracı okulumuzun sitesine veya herhangi bir canlı şirkete karşı çalıştırabilir miyiz?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, kesinlikle HAYIR. Yazılı izin veya Bug Bounty (HackerOne gibi) kapsamı olmadan
+herhangi bir canlı web sistemine otomatik tarayıcı çalıştırmak Türk Ceza Kanunu (TCK 243-244)
+ve uluslararası bilişim hukukuna göre suçtur.
+Biz projemizi tamamen etik ve yasal çerçevede geliştirebilmek için testlerimizi kendi
+bilgisayarımızda yerel (localhost) olarak çalışan DVWA (Damn Vulnerable Web Application)
+ve kendi yazdığımız test siteleri üzerinde yürütüyoruz."
+
+
+3. SORU: "React, Vue veya Angular gibi modern teknolojilerle yazılmış siteleri tarayabilir miyiz?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, mevcut Faz 1 prototipimiz klasik HTML ve sunucu taraflı render edilen sitelerde
+(PHP, Django, ASP.NET vb.) mükemmel çalışır. Ancak React ve Vue gibi 'Single Page Application'
+sitelerinde sayfayı tarayıcının içindeki JavaScript motoru oluşturur. 'requests' kütüphanesi
+JavaScript çalıştırmadığı için bu siteleri boş görebilir. Bu bir eksiklik değil, HTTP tabanlı
+tüm temel crawler'ların sınırıdır. İleri aşamalarda (Faz 4 veya geliştirme sürecinde)
+bunu aşmak için headless browser (Playwright) entegrasyonu planlanabilir."
+
+
+4. SORU: "Neden DVWA (Damn Vulnerable Web App) kullandınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, DVWA siber güvenlik eğitiminde dünya genelinde kullanılan ve kasıtlı olarak
+savunmasız bırakılmış resmi bir laboratuvar uygulamasıdır. İçerisinde SQL Injection,
+XSS, CSRF gibi OWASP Top 10 açıklarını barındırır. Aracımızın gerçekten zafiyet bulup
+bulmadığını doğrulamak (Ground Truth testi) için en güvenilir ve yasal test hedefidir."
+
+
+5. SORU: "Bundan sonraki haftalarda ne yapacaksınız? Yol haritanız nedir?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, hazırladığımız Gantt şemasına sadık kalarak ilerliyoruz:
+- Faz 1 (Devam): Crawler çıktısını alıp form ve parametreleri test edecek SQL Injection
+  ve XSS modüllerini yazacağız.
+- Faz 2: Açık port taraması, HTTP güvenlik başlığı analizi ve gizli dizin taraması ekleyeceğiz.
+- Faz 3: Tespit edilen servisleri NVD / CVE veritabanıyla eşleştirip risk puanı (CVSS) atayacağız.
+- Faz 4: Tüm bulguları profesyonel bir HTML raporda sunacak ve zaman kalırsa Flask tabanlı
+  bir web kontrol paneli ekleyeceğiz."

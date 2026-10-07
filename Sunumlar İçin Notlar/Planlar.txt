@@ -1,0 +1,11 @@
+🎓 Hocaya Sunumda Bunu Nasıl Avantaja Çevirirsin?
+
+Hocan sana şunu sorabilir:
+
+"Peki çocuğum, bu yazdığınız tarayıcıyı her siteye karşı çalıştırabilir miyiz? Engellenebilir mi?"
+
+Vereceğin şu cevap hocayı büyüler:
+
+"Hocam, şu anki Faz 1 prototipimiz temel HTTP düzeyinde (requests ve BeautifulSoup) çalışıyor. Statik ve geleneksel web uygulamalarında mükemmel çalışır. Ancak Cloudflare gibi WAF kullanan, agresif Rate Limiting uygulayan veya dinamik Single Page Application (React) olan sitelerde CAPTCHA'ya ve JS render engeline takılabilir. İleriki aşamalarda bunu aşmak için headless browser (Playwright) entegrasyonu planlanabilir."
+
+Bu cevap, senin sadece kod yazmadığını, web mimarisinin ve savunma sistemlerinin sınırlarını da çok iyi bildiğini gösterir.

@@ -1,0 +1,53 @@
+================================================================================
+🎓 HOCAYA SUNUM NOTLARI (BÖLÜM 2): GÜVENLİK VE ETİK TARAMA İNCELİKLERİ
+"Kodun içindeki bu satırlar neden var?"
+================================================================================
+
+1. SORU: "Crawler kodunda 'time.sleep(0.3)' satırı neden var? Taramayı yavaşlatmıyor mu?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, bir güvenlik test aracının hedef sistemi çökertmemesi (istem dışı DoS saldırısı
+yapmaması) temel etik kuraldır. Eğer bu bekleme süresini koymazsak saniyede onlarca
+istek atılarak hedef sunucunun kaynakları tüketilebilir veya güvenlik duvarları (WAF)
+bizi anında engelleyebilir. 0.3 saniyelik gecikme etik hız sınırlandırması (politeness delay)
+ve Rate Limiting engeline takılmama amacıyla bilerek konulmuştur."
+
+
+2. SORU: "Kodunuzda 'SKIP_KEYWORDS = ('logout', 'signout', 'setup.php')' listesi neden var?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, bu satır çok kritik bir koruma mekanizmasıdır:
+1. 'logout' / 'signout': Eğer crawler gezinirken çıkış linkine tıklarsa, elimizdeki
+   oturum çerezi sunucuda geçersiz kalır ve tarayıcı giriş ekranına atılarak tarama çöker.
+2. 'setup.php': DVWA gibi test ortamlarında bu sayfaya istek atmak veritabanını
+   varsayılana sıfırlar ve test ortamının bozulmasına neden olur.
+Bu nedenle oturumu düşüren ve veritabanını sıfırlayan sayfaları filtreledik."
+
+
+3. SORU: "'_same_host(url)' fonksiyonunu neden yazdınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, web sayfalarında dış kaynaklara verilen linkler olabilir (örn: Google, GitHub,
+Twitter vb.). Eğer alan adı (host) kontrolü yapmazsak crawler hedef siteden çıkıp
+tüm interneti sonsuz bir döngüde taramaya başlayabilir. Bu fonksiyon tarayıcının kesinlikle
+sadece izin verilen hedef etki alanında (scope) kalmasını garanti eder."
+
+
+4. SORU: "Oturum Çerezi (Session Cookie / PHPSESSID) mantığı nedir ve neden 'giriş bileti' gibidir?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, web protokolü (HTTP) durumsuzdur (stateless); yani bir sayfadan diğerine geçerken
+sunucu kullanıcının kim olduğunu hatırlamaz. Bu yüzden giriş yapıldığında sunucu tarayıcıya
+bir oturum anahtarı (Session Cookie) verir. Tıpkı bir sinema/konser bileti gibidir;
+kullanıcı nereye tıklarsa tıklasın tarayıcı bu bileti sunucuya gösterir ve şifre tekrar
+sorulmaz. Bizim crawler'ımız da '--cookie' parametresiyle bu bileti alarak yetkili
+(admin/user) alanları tarayabilmektedir."
+
+
+5. SORU: "Session Hijacking (Oturum Kaçırma) nedir ve XSS ile nasıl ilişkilidir?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, bir saldırgan kullanıcının oturum biletini (Session ID) ele geçirirse, şifreyi
+hiç bilmeden doğrudan kurbanın hesabına giriş yapabilir. XSS (Cross-Site Scripting)
+zafiyetinin en tehlikeli boyutu da budur: Saldırgan sayfaya yerleştirdiği zararlı
+JavaScript koduyla kullanıcının 'document.cookie' değerini çalıp kendi sunucusuna iletir."

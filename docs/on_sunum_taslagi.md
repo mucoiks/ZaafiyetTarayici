@@ -6,8 +6,10 @@
 
 ## Slayt 1 — Başlık
 - **Otomatik Zafiyet Tarayıcı**
-- Yazılım Temelli Proje Geliştirme Dersi
-- Ekip üyeleri, tarih, öğretim görevlisi
+- Yazılım Temelli Proje Geliştirme Dersi - Ön Sunum
+- Ekip: Mücahit Haşim İPEK (1230606809), Necat Akyüz (1220606005)
+- Ders Sorumlusu: Prof. Dr. Ercan BULUŞ
+- Tarih: Ekim 2026
 
 ## Slayt 2 — Problem ve Motivasyon
 - Web uygulamalarına yönelik saldırılar sürekli artıyor.

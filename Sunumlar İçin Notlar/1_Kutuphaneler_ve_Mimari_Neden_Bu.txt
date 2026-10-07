@@ -1,0 +1,74 @@
+================================================================================
+🎓 HOCAYA SUNUM NOTLARI (BÖLÜM 1): KÜTÜPHANELER VE MİMARİ KARARLAR
+"Bunu neden kullandık? Neden diğeri değil?"
+================================================================================
+
+1. SORU: "Neden Python seçtiniz? C# veya Java ile de yapamaz mıydınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, C# ve Java güçlü diller olsa da siber güvenlik, penetrasyon testi ve zafiyet
+taraması alanında dünya genelinde fiili standart Python'dur. Requests, BeautifulSoup,
+Scapy, python-nmap ve Jinja2 gibi güvenlik kütüphanelerinin ekosistemi Python'da çok
+daha zengin ve esnektir. Hızlı prototipleme imkanı sunduğu için bu dili tercih ettik."
+
+
+2. SORU: "HTTP istekleri için neden 'requests' kütüphanesini seçtiniz? Python'un içinde zaten 'urllib' yok mu?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Evet hocam, Python standart kütüphanesinde urllib var; ancak urllib oturum (session)
+ve çerez yönetiminde çok hantaldır. Biz 'requests.Session()' yapısını kullandık. Bu sayede:
+- Tarayıcı gibi tek bir oturum nesnesi açıp oturum çerezlerini (PHPSESSID gibi)
+  tüm istekler boyunca otomatik taşıyabiliyoruz.
+- Kod okunabilirliği çok daha yüksektir ve hata yönetimi daha güvenlidir."
+
+
+3. SORU: "HTML ayrıştırmak için neden 'BeautifulSoup' kullandınız? Regex (düzenli ifadeler) ile yapamaz mıydınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, HTML dilleri bağlamdan bağımsız (context-free) diller değildir; etiketler iç içe
+geçer, tırnaklar unutulabilir veya hatalı kapanabilir. Düzenli ifadelerle (Regex) HTML
+parçalamak hem 'HTML parsing with regex' anti-pattern'ına yol açar hem de bozuk HTML'lerde
+hata verir. BeautifulSoup ise gerçek bir DOM (Document Object Model) ağacı kurarak
+en bozuk HTML'lerden bile form ve linkleri hatasız ayıklar."
+
+
+4. SORU (⭐ HOCALARIN EN SEVDİĞİ ALGORİTMA SORUSU):
+"Crawler kuyruğunda neden standart Python listesi '[]' yerine 'collections.deque' kullandınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, bu karar tamamen algoritma karmaşıklığı (Time Complexity) ile ilgilidir.
+Standart bir Python listesinde en baştaki elemanı çekmek (liste.pop(0)) O(N) sürede
+çalışır; çünkü arkadaki tüm elemanların bellekte tek tek sola kaydırılması gerekir.
+Link sayısı arttıkça program yavaşlar.
+'collections.deque' (Double-Ended Queue) ise iki yönlü bağlı liste (doubly linked list)
+mantığıyla çalışır. En baştan eleman çekmek (popleft()) O(1) sabit zamanda gerçekleşir.
+Bu da crawler'ımızın performansını binlerce sayfada bile sabit tutar."
+
+
+5. SORU: "Tarama algoritması olarak neden BFS (Breadth-First Search) kullandınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, BFS (Genişlik Öncelikli Arama) kuyruk (queue - FIFO) mantığıyla çalışır.
+Ana sayfaya en yakın linkleri önce tarar, ardından bir alt katmana geçer.
+Eğer DFS (Derinlik Öncelikli Arama - Stack) kullansaydık, crawler tek bir link dalının
+peşine takılıp sitenin çok derinlerine gider ve ana sayfadaki kritik formları kaçırabilirdi.
+Web crawling için endüstri standardı BFS'tir."
+
+
+6. SORU: "Form ve bulguları saklarken neden sözlük (dict) yerine '@dataclass' kullandınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, sözlüklerde (dict) anahtar isimlerinde bir harf hatası yapılsa bile kod hata
+vermeden çalışır ve sessiz mantık hataları oluşur. Python 3.7+ ile gelen '@dataclass'
+yapısı sayesinde kodumuz nesne yönelimli (OOP), tip güvenli (type-safe) ve okunabilir
+hale geldi. Her formun ve sayfanın özellikleri katı bir model ile temsil ediliyor."
+
+
+7. SORU: "Linkleri birleştirirken neden string toplama ('+' operatörü) yerine 'urljoin' kullandınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, web sayfalarındaki linkler çok farklı formatlarda olabilir:
+Örneğin '/profil', 'duzenle.php', '../index.php' veya tam adres 'http://...'.
+Eğer string toplama yapsaydık 'http://site.com//profil' gibi hatalı çift eğik çizgiler
+veya göreli yol hataları oluşurdu. 'urllib.parse.urljoin' fonksiyonu ise modern web
+tarayıcılarının adres çözümleme standartlarına (RFC 3986) göre hatasız birleştirme yapar."
