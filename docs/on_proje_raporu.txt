@@ -1,0 +1,252 @@
+================================================================================
+                    T.C. TEKİRDAĞ NAMIK KEMAL ÜNİVERSİTESİ
+              YAZILIM TEMELLİ PROJE GELİŞTİRME DERSİ
+                   PROJE ÖN RAPORU (TEKLİF VE TASARIM)
+================================================================================
+
+PROJE ADI:
+    ZAAFİYET TARAYICI (Otomatik Web Zafiyet Tarama ve Denetim Aracı)
+
+HAZIRLAYAN ÖĞRENCİLER:
+    - Mücahit Haşim İPEK  (Öğrenci No: 1230606809)
+    - Necat AKYÜZ         (Öğrenci No: 1220606005)
+
+DERS SORUMLUSU / DANIŞMAN:
+    Prof. Dr. Ercan BULUŞ
+
+TARİH:
+    Ekim 2026 / Tekirdağ
+
+================================================================================
+İÇİNDEKİLER
+================================================================================
+1. ÖZET
+2. PROBLEM TANIMI VE MOTİVASYON
+3. PROJENİN AMACI VE HEDEFLERİ
+4. PROJE KAPSAMI (FAZ PLANI)
+5. SİSTEM MİMARİSİ VE METODOLOJİ
+6. KULLANILACAK TEKNOLOJİLER VE SEÇİM GEREKÇELERİ
+7. ETİK VE YASAL ÇERÇEVE
+8. MEVCUT DURUM VE ÇALIŞMA AŞAMASI
+9. PROJE TAKVİMİ VE İŞ PAKETLERİ (GANTT PLANI)
+10. RİSK ANALİZİ VE YÖNETİMİ
+11. KAYNAKÇA
+
+================================================================================
+1. ÖZET
+================================================================================
+Günümüzde web tabanlı uygulamaların kullanımının hızla artması, bu sistemleri
+siber saldırganların birincil hedefi haline getirmiştir. Web uygulamalarındaki
+kodlama ve yapılandırma hataları; veri sızıntılarına, yetkisiz erişimlere ve
+ciddi maddi/itibari kayıplara yol açmaktadır.
+
+Bu projenin amacı; hedef web uygulamalarını otomatik olarak haritalandıran,
+giriş noktalarını (formlar, URL parametreleri) tespit eden, yaygın güvenlik
+açıklarını (SQL Injection, XSS, eksik güvenlik başlıkları vb.) güvenli test
+girdileriyle denetleyen ve sonuçları anlaşılır bir rapor halinde sunan modüler,
+Python tabanlı bir "Otomatik Zafiyet Tarayıcı" geliştirmektir. Proje, aşamalı
+(fazlı) bir mühendislik yaklaşımıyla tasarlanmış olup etik ve yasal kurallar
+çerçevesinde yürütülecektir.
+
+================================================================================
+2. PROBLEM TANIMI VE MOTİVASYON
+================================================================================
+Web güvenliği alanındaki temel problemler şunlardır:
+
+1. Manuel Testlerin Yetersizliği ve Maliyeti:
+   Bir web uygulamasındaki tüm sayfaları, formları ve parametreleri manuel olarak
+   incelemek hem çok zaman almakta hem de insan hatasına açık olmaktadır. Kapsamlı
+   sızma testleri (penetrasyon testleri) küçük işletmeler ve bireysel geliştiriciler
+   için yüksek maliyetlidir.
+
+2. Sürekli Değişen Saldırı Yüzeyi:
+   Yazılım geliştirme süreçlerinde yapılan sık güncellemeler, farkında olunmadan
+   yeni zafiyetlerin sisteme dahil edilmesine neden olabilmektedir.
+
+3. Otomasyon İhtiyacı:
+   Geliştirme aşamasında veya periyodik denetimlerde sistemi hızlıca tarayıp
+   temel açıkları erkenden tespit edebilecek, hafif ve anlaşılır araçlara olan
+   ihtiyaç projenin temel motivasyonunu oluşturmaktadır.
+
+================================================================================
+3. PROJENİN AMACI VE HEDEFLERİ
+================================================================================
+Projenin ana hedefi, dışarıdan verilen bir hedef adresi analiz ederek insan
+müdahalesine ihtiyaç duymadan güvenlik denetimi gerçekleştiren bir araç üretmektir.
+
+Temel Hedefler:
+- Web Crawling: Hedef sitedeki tüm sayfaları, linkleri ve form yapılarını haritalamak.
+- Zafiyet Tespiti: Tespit edilen parametreleri zararsız test girdileriyle denetleyerek
+  SQL Injection ve Reflected/Stored XSS gibi zafiyetleri yakalamak.
+- Yapılandırma Denetimi: HTTP güvenlik başlıklarını (CSP, HSTS, X-Frame-Options) ve
+  açık port/servis durumlarını analiz etmek.
+- Raporlama ve Düzeltme Önerisi: Yalnızca açığı tespit etmekle kalmayıp, geliştiriciye
+  bu açığın nasıl kapatılacağını (remediation) açıklayan raporlar üretmek.
+
+================================================================================
+4. PROJE KAPSAMI (FAZ PLANI)
+================================================================================
+Proje "yapabildiğimiz yere kadar" prensibiyle esnek, ancak modüler olarak
+4 ana faza bölünmüştür:
+
+[FAZ 1] Web Zafiyet Tarama Çekirdeği (Temel Hedef)
+- Web Crawler (Keşif ve Form Analizi)
+- SQL Injection (CWE-89) Tespit Modülü
+- Cross-Site Scripting - XSS (CWE-79) Tespit Modülü
+- Konsol ve Metin Çıktısı
+
+[FAZ 2] Ağ ve Yapılandırma Analizi (Orta Düzey Hedef)
+- Açık Port ve Temel Servis Keşfi (Socket / python-nmap)
+- HTTP Güvenlik Başlıkları Analizi (Eksik güvenlik politikaları tespiti)
+- Dizin / Yol Keşfi (Directory Listing tespiti)
+- Yapılandırılmış HTML Rapor Çıktısı
+
+[FAZ 3] Zafiyet İstihbaratı ve Skorlama (Gelişmiş Hedef)
+- NVD / CVE API Entegrasyonu (Bulunan servis versiyonlarını CVE veritabanı ile eşleştirme)
+- CVSS Tabanlı Risk Skorlama (Düşük, Orta, Yüksek, Kritik sınıflandırması)
+
+[FAZ 4] Arayüz ve Son Rötuşlar (Opsiyonel Hedef)
+- Web Kontrol Paneli (Flask tabanlı yerel yönetim arayüzü)
+- Son Dokümantasyon ve Final Sunumu
+
+================================================================================
+5. SİSTEM MİMARİSİ VE METODOLOJİ
+================================================================================
+Sistem modüler bir boru hattı (pipeline) mimarisine sahiptir:
+
+[Hedef URL / Cookie]
+        │
+        ▼
+┌──────────────────┐
+│   Web Crawler    │ ───► Genişlik Öncelikli Arama (BFS) ile sayfaları,
+└──────────────────┘      formları ve girdi alanlarını (input) listeler.
+        │
+        ▼
+┌──────────────────┐
+│ Tarama Modülleri │ ───► Keşfedilen form ve parametrelere odaklanır:
+└──────────────────┘      ├─ SQLi Modülü (Sözdizimi hata analizi)
+        │                 ├─ XSS Modülü (Karakter yansıma ve kaçış kontrolü)
+        │                 └─ Header Modülü (Güvenlik başlıkları denetimi)
+        ▼
+┌──────────────────┐
+│ Risk Skorlama ve │ ───► Bulguları standart 'Finding' veri modeline dönüştürür,
+│  Raporlama       │      risk derecesi ve çözüm önerisiyle dosyalar.
+└──────────────────┘
+
+Algoritmik Tercihler:
+- BFS (Breadth-First Search): Web sayfaları taranırken derinlemesine kaybolmamak
+  ve ana sayfaya yakın formları öncelikli yakalamak için kuyruk tabanlı BFS kullanılır.
+- Çift Uçlu Kuyruk (collections.deque): Standart dizilerdeki O(N) zaman kaybını
+  önlemek amacıyla O(1) sabit zamanda çalışan 'deque' veri yapısı tercih edilmiştir.
+- Durumsuzluk (Stateless) ve Oturum Yönetimi: Giriş gerektiren sistemlerin de
+  taranabilmesi için 'Session Cookie' aktarım mekanizması tasarlanmıştır.
+
+================================================================================
+6. KULLANILACAK TEKNOLOJİLER VE SEÇİM GEREKÇELERİ
+================================================================================
+- Programlama Dili: Python 3.12+
+  Gerekçe: Siber güvenlik ve ağ araçları ekosistemindeki zengin kütüphane desteği,
+  hızlı prototipleme kabiliyeti ve platform bağımsızlığı.
+
+- HTTP İstekleri: 'requests' Kütüphanesi
+  Gerekçe: Dahili 'urllib' kütüphanesine kıyasla oturum (requests.Session) ve
+  çerez yönetimini otomatikleştirmesi, temiz API yapısı.
+
+- HTML Ayrıştırma: 'BeautifulSoup4' (bs4)
+  Gerekçe: Düzenli ifadelerin (Regex) bozuk HTML sayfalarında yetersiz kalması
+  nedeniyle; gerçek bir DOM ağacı kurarak form ve linkleri hatasız ayıklaması.
+
+- Kuyruk Yönetimi: 'collections.deque'
+  Gerekçe: Standart Python listelerine göre en baştan eleman çıkarmada O(1)
+  zaman karmaşıklığı sunarak binlerce bağlantıda yüksek performans sağlaması.
+
+- Veri Modelleme: '@dataclass'
+  Gerekçe: Klasik sözlüklere (dict) kıyasla tip güvenliği (type-safety) ve
+  nesne yönelimli, temiz bir veri yapısı sunması.
+
+- Raporlama Şablonu: 'Jinja2'
+  Gerekçe: Denetim bulgularını dinamik, profesyonel HTML raporlara dönüştürebilmek.
+
+================================================================================
+7. ETİK VE YASAL ÇERÇEVE
+================================================================================
+Siber güvenlik araçlarının geliştirilmesinde etik ilkeler ve yasal sınırlar en
+önemli unsurdur.
+
+Yasal Dayanak:
+Türk Ceza Kanunu'nun (TCK) 243. ve 244. maddeleri gereğince, sahibinden yazılı
+izin alınmamış herhangi bir bilişim sistemine yetkisiz erişim sağlamak veya
+otomatik güvenlik taraması yapmak suç teşkil etmektedir.
+
+Projenin Güvenlik ve Etik Prensipleri:
+1. Test Ortamı: Geliştirilecek araç, kesinlikle canlı kurumsal sistemler üzerinde
+   kullanılmayacaktır. Tüm test ve doğrulama işlemleri yerel ortamda çalışan
+   DVWA (Damn Vulnerable Web Application) ve laboratuvar uygulamaları üzerinde
+   gerçekleştirilecektir.
+2. Hız Sınırı (Rate Limiting): Hedef sunucuların aşırı yüklenmesini ve istem dışı
+   hizmet dışı kalmasını (DoS) önlemek amacıyla istekler arasına bekleme süreleri
+   konulacaktır.
+3. Kapsam Kilidi (Scope Control): Tarayıcının dış sitelere taşmasını engelleyen
+   alan adı kontrol mekanizmaları bulunacaktır.
+
+================================================================================
+8. MEVCUT DURUM VE ÇALIŞMA AŞAMASI
+================================================================================
+Proje takvimine uygun olarak şu an "Planlama, Ön Araştırma ve Tasarım" aşaması
+tamamlanmıştır. Bu kapsamda:
+- Web zafiyetlerinin teorik altyapısı ve tespit mekanizmaları incelenmiştir.
+- Sistemin modüler mimarisi, veri modelleri ve sınıf hiyerarşisi tasarlanmıştır.
+- Geliştirme ortamı (Python sanal ortamı, bağımlılıklar, Git sürüm kontrol sistemi)
+  hazırlanmıştır.
+- Testlerin güvenle yürütülebilmesi için yerel Docker/DVWA laboratuvar altyapısı
+  kurulmuştur.
+- Proje ön sunumu ve ön raporu hazırlanarak danışman onayına sunulmuştur.
+
+Takvime göre kodlama ve Faz 1 geliştirmeleri bu ön sunum/rapor onayının hemen
+ardından planlanan tarihlerde başlayacaktır.
+
+================================================================================
+9. PROJE TAKVİMİ VE İŞ PAKETLERİ (GANTT PLANI)
+================================================================================
+Proje dönemi (Ekim 2026 - Ocak 2027) 13 haftalık bir plana bağlanmıştır:
+
+┌────────────┬─────────────────────────────┬─────────────────────────────────┐
+│ Hafta / Dönem│ İş Paketi / Görev           │ Beklenen Çıktı                  │
+├────────────┼─────────────────────────────┼─────────────────────────────────┤
+│ 1. Hafta   │ Planlama, Gantt, Ön Rapor   │ Ön Sunum ve Onaylanan Rapor     │
+│ 2-3. Hafta │ Web Crawler Geliştirme      │ Form ve URL Keşif Modülü        │
+│ 4. Hafta   │ SQL Injection Tespit Modülü │ Hata Tabanlı SQLi Tarayıcısı    │
+│ 5. Hafta   │ XSS Tespit Modülü           │ Reflected XSS Tarayıcısı        │
+│ 6-7. Hafta │ Port ve Güvenlik Başlıkları │ Açık Port & Header Analizörü    │
+│ 8. Hafta   │ Dizin ve Yapılandırma Tara. │ Directory Listing Tarayıcısı    │
+│ 9. Hafta   │ HTML Raporlama Motoru       │ Dinamik Rapor Üreticisi         │
+│ 10-11.Hafta│ CVE Entegrasyonu ve Skorlama│ NVD API Modülü & Risk Puanı     │
+│ 12. Hafta  │ Entegrasyon, Test ve İyileş.│ Kapsamlı Doğrulama Testleri     │
+│ 13. Hafta  │ Dokümantasyon ve Final      │ Final Raporu ve Proje Teslimi   │
+└────────────┴─────────────────────────────┴─────────────────────────────────┘
+
+================================================================================
+10. RİSK ANALİZİ VE YÖNETİMİ
+================================================================================
+1. Risk: Web Uygulama Güvenlik Duvarları (WAF) ve Bot Korumaları
+   Önlem: İlk fazlarda standart HTTP denetimleri hedeflenecek; testler yerel
+   ortamda yürütülerek WAF kaynaklı sahte negatifler elenecektir.
+
+2. Risk: Zaman Yetersizliği
+   Önlem: Modüler tasarım sayesinde Faz 1 (Web Çekirdeği) ve Faz 2 (Ağ/Raporlama)
+   birincil teslim kriteri olarak belirlenmiştir. Faz 3 ve 4 ek hedeflerdir.
+
+3. Risk: Hatalı Pozitifler (False Positives)
+   Önlem: Yalnızca durum koduna bakılmayacak; sunucudan dönen hata mesajları ve
+   yansımalar çoklu imza (pattern matching) yöntemiyle doğrulanacaktır.
+
+================================================================================
+11. KAYNAKÇA
+================================================================================
+1. OWASP Top 10 Web Application Security Risks (2021/Güncel).
+2. PortSwigger Web Security Academy Dokümantasyonu ve Eğitim Laboratuvarları.
+3. NIST National Vulnerability Database (NVD) API Dokümantasyonu (nvd.nist.gov).
+4. RFC 3986: Uniform Resource Identifier (URI): Generic Syntax.
+5. DVWA (Damn Vulnerable Web Application) Açık Kaynak Projesi Dokümantasyonu.
+6. 5237 Sayılı Türk Ceza Kanunu (Bilişim Alanında Suçlar, Madde 243-244).
+================================================================================
