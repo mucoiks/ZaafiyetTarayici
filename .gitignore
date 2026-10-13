@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .env
 *.db
+
+# Gizli ve yerel tutulacak klasörler
+logs/
+Sunumlar İçin Notlar/
+"Sunumlar İçin Notlar/"
