@@ -1,0 +1,73 @@
+================================================================================
+🎓 HOCAYA SUNUM NOTLARI (BÖLÜM 4): WEB CRAWLER GELİŞTİRMELERİ VE FAZ-1 KAZANIMLARI
+"13-23 Ekim Haftası: Güçlendirilmiş Web Keşif Motoru Savunma Notları"
+================================================================================
+
+1. SORU: "Crawler'a neden derinlik sınırı (max_depth) eklediniz? Zaten sayfa sınırı (max_pages) yok muydu?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, web sitelerinde sayfa sınırı tek başına yeterli değildir. Çünkü web sitelerinde
+sonsuz takvim döngüleri (örn: /etkinlik?tarih=2026-10-14, 2026-10-15...) veya sonsuz
+sayfalama (pagination) mekanizmaları olabilir.
+Eğer derinlik kontrolü (max_depth) koymazsak crawler tek bir önemsiz sayfanın 20 kat
+derinine inip sitenin diğer ana bölümlerini kaçırabilir.
+Biz BFS kuyruğunda her URL'yi (url, depth) ikilisi olarak tuttuk. Derinlik sınırına
+(varsayılan: 3) ulaşıldığında o sayfanın formlarını kaydederiz ama daha derine inen
+linkleri kuyruğa eklemeyiz. Böylece tarama hem geniş hem kontrollü kalır."
+
+
+2. SORU: "Form alanlarını neden 'Test Edilebilir' (injectable) ve 'Sabit/Buton' diye sınıflandırdınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, bir formda 'username', 'password', 'search', 'textarea' veya 'hidden' gibi
+alanlar zafiyet enjekte edilmeye (SQLi, XSS) açık alanlardır. Ancak 'submit', 'reset',
+'button' gibi alanlar veri giriş alanı değildir; formu tetikleyen düğmelerdir.
+Eğer ayrım yapmasaydık zafiyet motorumuz gereksiz yere 'Giriş Yap' düğmesine SQL payload'ı
+gönderip hem sunucuyu gereksiz yoracak hem de formun gönderilme mantığını bozacaktı.
+Geliştirdiğimiz 'InputField' modeli sayesinde sonraki hafta yazacağımız SQLi ve XSS
+modülleri doğrudan 'injectable_inputs' listesini alıp sadece veri alanlarını hedef alacaktır."
+
+
+3. SORU: "URL parametrelerini (Query Strings) nasıl ve neden özel bir nesne olarak ayrıştırdınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, GET metoduyla çalışan zafiyetler (örneğin: 'sqli/?id=1&Submit=Submit') URL'nin
+içindeki parametrelerde gizlidir.
+Biz 'urllib.parse.parse_qsl' kullanarak bu URL'leri 'ParamURL' sınıfına dönüştürdük.
+Bu sınıf sayesinde URL'nin taban adresi ile parametre isimlerini ({'id': '1'}) sözlük
+olarak ayrıştırdık. Böylece zafiyet test motorumuz 'id' parametresini anında yakalayıp
+oraya test karakteri enjekte edebilecek duruma geldi."
+
+
+4. SORU: "Crawler'ınıza 'robots.txt' kontrolü eklemenizin güvenlik açısından mantığı nedir?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, iki kritik sebebi vardır:
+1. Etik Kural: Bir güvenlik denetçisi taranan sistemin kurallarını bilmelidir.
+2. Bilgi Toplama (Reconnaissance / OSINT): Web geliştiricileri arama motorlarının
+   indekslemesini istemedikleri gizli admin panellerini, yedek dosyalarını veya test
+   yollarını çoğunlukla 'robots.txt' dosyasına 'Disallow: /admin' şeklinde yazarlar.
+   Bizim crawler'ımız tarama başında bu dosyayı okuyarak potansiyel gizli dizinleri
+   hemen yakalar ve raporun başına ekler."
+
+
+5. SORU: "Özelleştirilmiş User-Agent başlığı neden tanımladınız?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, Python 'requests' kütüphanesi varsayılan olarak 'python-requests/x.x' başlığı
+gönderir. Birçok temel Web Güvenlik Duvarı (WAF) ve sunucu filtresi bu başlığı görür
+görmez isteği 403 Forbidden ile engeller.
+Biz hem gerçekçi bir tarayıcı başlığı sunduk hem de aracımızın akademik bir proje
+olduğunu belirten 'ZaafiyetTarayici/1.0 (+NKU Bilgisayar Muhendisligi Projesi)' imzasını
+ekleyerek etik şeffaflık sağladık."
+
+
+6. SORU: "HTTP durum kodlarını (200, 301, 403 vb.) ve başlıkları şimdiden kaydetmenizin amacı nedir?"
+--------------------------------------------------------------------------------
+VERİLECEK CEVAP:
+"Hocam, Gantt şemamızdaki Faz 2 adımı 'HTTP Güvenlik Başlıkları Analizi'dir.
+Crawler her sayfayı gezerken dönen HTTP başlıklarını (Server, CSP, X-Frame-Options) ve
+durum kodlarını 'PageInfo' nesnesi içinde belleğe kaydeder.
+Böylece Faz 2'ye geçtiğimizde aynı sayfalara tekrar tekrar HTTP isteği atmak zorunda
+kalmayacağız; mimarimiz önbellekleme (caching) prensibiyle çalışarak hem ağ trafiğini
+azaltacak hem de hız kazanacaktır."

@@ -34,7 +34,8 @@ def dvwa_login(base_url, user="admin", password="password"):
 def main():
     parser = argparse.ArgumentParser(description="Otomatik Zafiyet Tarayıcı (crawler aşaması)")
     parser.add_argument("--target", required=True, help="Hedef URL (yalnızca izinli sistemler)")
-    parser.add_argument("--max-pages", type=int, default=50)
+    parser.add_argument("--max-pages", type=int, default=50, help="Maksimum taranacak sayfa sayısı")
+    parser.add_argument("--max-depth", type=int, default=3, help="Maksimum tarama derinliği (varsayılan: 3)")
     parser.add_argument("--dvwa-login", action="store_true", help="DVWA test ortamına otomatik giriş yap")
     parser.add_argument("--cookie", help="Giriş yapılmış oturum çerezi (Örn: 'session_id=xyz; role=user')")
     parser.add_argument("--output", help="Özel log dosyası yolu (varsayılan: logs/[site]_[tarih].txt)")
@@ -43,32 +44,63 @@ def main():
     base = args.target.strip().rstrip("/")
     if not base.startswith(("http://", "https://")):
         base = "http://" + base
-    if args.dvwa_login:
-        session = dvwa_login(base)
-    elif args.cookie:
-        session = requests.Session()
-        # "name=value; name2=value2" formatındaki çerezleri ayrıştır
-        for item in args.cookie.split(";"):
-            if "=" in item:
-                k, v = item.strip().split("=", 1)
-                session.cookies.set(k, v)
-    else:
-        session = None
+    try:
+        if args.dvwa_login:
+            session = dvwa_login(base)
+        elif args.cookie:
+            session = requests.Session()
+            # "name=value; name2=value2" formatındaki çerezleri ayrıştır
+            for item in args.cookie.split(";"):
+                if "=" in item:
+                    k, v = item.strip().split("=", 1)
+                    session.cookies.set(k, v)
+        else:
+            session = None
+    except requests.RequestException as exc:
+        print(f"\n[!] HATA: Hedefe bağlanılamadı ({base}).")
+        print("    Lütfen hedef web sunucusunun (veya Docker/DVWA'nın) çalıştığından emin olun.")
+        return
 
-    result = Crawler(base, session=session, max_pages=args.max_pages).crawl()
+    result = Crawler(
+        base,
+        session=session,
+        max_pages=args.max_pages,
+        max_depth=args.max_depth
+    ).crawl()
 
     summary_text = (
         f"\n[+] {len(result.pages)} sayfa, {len(result.forms)} form, "
-        f"{len(result.param_urls)} parametreli URL bulundu\n"
+        f"{len(result.param_urls)} parametreli URL bulundu"
     )
-    print(summary_text)
+    if result.disallowed_paths:
+        summary_text += f", {len(result.disallowed_paths)} robots.txt kuralı tespit edildi"
+    print(summary_text + "\n")
 
     # Terminale yazdır
+    if result.disallowed_paths:
+        print("[*] robots.txt Gizli/Yasaklı Yollar:")
+        for path in result.disallowed_paths:
+            print(f"  [Disallow] {path}")
+        print()
+
+    print("[*] Keşfedilen Sayfalar:")
     for page in result.pages:
-        print(f"  sayfa: {page}")
+        print(f"  [{page.status_code}] (Derinlik: {page.depth}) {page.url}")
+
+    print("\n[*] Keşfedilen Formlar ve Test Edilebilir Alanlar:")
     for form in result.forms:
-        names = ", ".join(i["name"] for i in form.inputs)
-        print(f"  form : {form.method.upper()} {form.action}  [{names}]")
+        inj = ", ".join(i.name for i in form.injectable_inputs)
+        others = ", ".join(i.name for i in form.inputs if not i.is_injectable)
+        print(f"  [{form.method.upper()}] {form.action}")
+        print(f"      Test Edilebilir Alanlar: [{inj if inj else 'Yok'}]")
+        if others:
+            print(f"      Sabit/Buton Alanları   : [{others}]")
+
+    if result.param_urls:
+        print("\n[*] Parametreli URL'ler (Zafiyet Test Adayları):")
+        for p_url in result.param_urls:
+            p_names = ", ".join(p_url.params.keys())
+            print(f"  GET {p_url.full_url}  -> Parametreler: [{p_names}]")
 
     # logs klasörünü oluştur ve dinamik dosya adı belirle
     logs_dir = "logs"
@@ -84,35 +116,53 @@ def main():
         log_path = os.path.join(logs_dir, f"{host}_{timestamp}.txt")
 
     with open(log_path, "w", encoding="utf-8") as f:
-        f.write("=" * 60 + "\n")
-        f.write(f"TARAMA RAPORU: {base}\n")
+        f.write("=" * 65 + "\n")
+        f.write(f"GELİŞMİŞ WEB CRAWLER KEŞİF RAPORU: {base}\n")
         f.write(f"Tarih: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("=" * 60 + "\n\n")
+        f.write(f"Ayarlar: Max Pages={args.max_pages}, Max Depth={args.max_depth}\n")
+        f.write("=" * 65 + "\n\n")
 
-        f.write(f"ÖZET:\n")
+        f.write("ÖZET:\n")
         f.write(f"- Keşfedilen Sayfalar: {len(result.pages)}\n")
         f.write(f"- Keşfedilen Formlar: {len(result.forms)}\n")
-        f.write(f"- Parametreli URL'ler: {len(result.param_urls)}\n\n")
+        f.write(f"- Parametreli URL'ler: {len(result.param_urls)}\n")
+        f.write(f"- robots.txt Kuralları: {len(result.disallowed_paths)}\n\n")
 
-        f.write("-" * 40 + "\n")
-        f.write("SAYFALAR:\n")
-        f.write("-" * 40 + "\n")
+        if result.disallowed_paths:
+            f.write("-" * 50 + "\n")
+            f.write("ROBOTS.TXT BULGULARI:\n")
+            f.write("-" * 50 + "\n")
+            for path in result.disallowed_paths:
+                f.write(f"Disallow: {path}\n")
+            f.write("\n")
+
+        f.write("-" * 50 + "\n")
+        f.write("SAYFALAR VE DURUM KODLARI:\n")
+        f.write("-" * 50 + "\n")
         for page in result.pages:
-            f.write(f"{page}\n")
+            f.write(f"[{page.status_code}] (Derinlik: {page.depth}) {page.url}\n")
 
-        f.write("\n" + "-" * 40 + "\n")
-        f.write("FORMLAR VE GİRDİ ALANLARI:\n")
-        f.write("-" * 40 + "\n")
+        f.write("\n" + "-" * 50 + "\n")
+        f.write("FORMLAR VE GİRDİ ALANI DETAYLARI:\n")
+        f.write("-" * 50 + "\n")
         for form in result.forms:
-            names = ", ".join(i["name"] for i in form.inputs)
-            f.write(f"[{form.method.upper()}] {form.action}\n")
-            f.write(f"  Girdiler: {names if names else '(Input yok)'}\n")
+            inj = ", ".join(i.name for i in form.injectable_inputs)
+            f.write(f"[{form.method.upper()}] {form.action} (Kaynak: {form.page_url})\n")
+            f.write(f"  Test Edilebilir: [{inj if inj else 'Yok'}]\n")
+            for inp in form.inputs:
+                f.write(f"    - {inp.name} (Tür: {inp.type}, Değer: '{inp.value}', Test Edilebilir: {inp.is_injectable})\n")
+            f.write("\n")
 
-        f.write("\n" + "-" * 40 + "\n")
-        f.write("PARAMETRELİ URL'LER (Zafiyet Adayları):\n")
-        f.write("-" * 40 + "\n")
+        f.write("-" * 50 + "\n")
+        f.write("PARAMETRELİ URL'LER (SQLi & XSS Test Noktaları):\n")
+        f.write("-" * 50 + "\n")
         for p_url in result.param_urls:
-            f.write(f"{p_url}\n")
+            f.write(f"URL: {p_url.url}\n")
+            f.write(f"  Tam Adres: {p_url.full_url}\n")
+            f.write(f"  Parametreler:\n")
+            for k, v in p_url.params.items():
+                f.write(f"    - {k} = {v}\n")
+            f.write("\n")
 
     print(f"\n[+] Tarama sonuçları başarıyla '{log_path}' dosyasına kaydedildi.")
 
