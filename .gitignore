@@ -8,3 +8,13 @@ __pycache__/
 logs/
 Sunumlar İçin Notlar/
 "Sunumlar İçin Notlar/"
+
+# Ödev raporları, sunum taslakları ve kurallar (Yalnızca yerelde kalacaklar)
+docs/kurallar.txt
+docs/on_proje_raporu.docx
+docs/on_proje_raporu.txt
+docs/generate_report_docx.py
+docs/ZafiyetTarayıcıÖnsunum.pdf
+docs/*.pdf
+docs/on_sunum.html
+docs/on_sunum_taslagi.md
