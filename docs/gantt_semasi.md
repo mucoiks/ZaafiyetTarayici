@@ -1,58 +1,61 @@
 # Gantt Şeması — Otomatik Zafiyet Tarayıcı
 
+> **Not:** Proje **1 Ekim 2026** tarihinde başlamıştır. Danışman Prof. Dr. Ercan BULUŞ ile her **Perşembe** günü (1, 8, 15, 22, 29 Ekim...) düzenli haftalık ilerleme ve değerlendirme toplantısı gerçekleştirilmektedir.
+
 ```mermaid
 gantt
-    title Otomatik Zafiyet Tarayıcı - Proje Takvimi (Ekim 2026 - Ocak 2027)
+    title Otomatik Zafiyet Tarayıcı - Proje Takvimi (1 Ekim 2026 - 7 Ocak 2027)
     dateFormat  YYYY-MM-DD
     axisFormat  %d %b
 
-    section Planlama
-    Konu araştırması ve zafiyet çalışması   :done,    p1, 2026-10-01, 10d
-    Proje planı, Gantt, ön sunum            :active,  p2, 2026-10-01, 8d
-    Geliştirme ortamı (Python, Git, DVWA)   :         p3, 2026-10-08, 5d
+    section 1. Hafta (1-8 Eki)
+    Konu araştırması, ön sunum ve ortam kurulumu :done, p1, 2026-10-01, 7d
 
-    section Faz 1 - Web Tarama
-    Web crawler (link ve form keşfi)        :f1a, 2026-10-13, 10d
-    SQL Injection tespit modülü             :f1b, after f1a, 10d
-    XSS tespit modülü                       :f1c, after f1b, 7d
-    CLI çıktısı ve Faz 1 testleri           :f1d, after f1c, 5d
+    section 2. Hafta (8-15 Eki)
+    Web Crawler (BFS, form ve parametre keşfi)   :active, f1a, 2026-10-08, 7d
+
+    section 3. Hafta (15-22 Eki)
+    SQL Injection tespit modülü (CWE-89)         :f1b, 2026-10-15, 7d
+
+    section 4. Hafta (22-29 Eki)
+    XSS tespit modülü (CWE-79)                   :f1c, 2026-10-22, 7d
+
+    section 5. Hafta (29 Eki - 5 Kas)
+    CLI çıktısı, loglama ve Faz 1 entegrasyonu   :f1d, 2026-10-29, 7d
 
     section Faz 2 - Ağ ve Yapılandırma
-    Port tarama modülü                      :f2a, 2026-11-14, 10d
-    HTTP güvenlik başlığı analizi           :f2b, after f2a, 5d
-    Dizin tarama (directory listing)        :f2c, after f2b, 7d
-    HTML rapor üretimi                      :f2d, after f2c, 7d
+    Port tarama ve servis keşif modülü           :f2a, 2026-11-05, 7d
+    HTTP güvenlik başlığı analizi                :f2b, 2026-11-12, 7d
+    Dizin tarama ve gizli dosya keşfi            :f2c, 2026-11-19, 7d
+    HTML rapor üretimi (Jinja2)                  :f2d, 2026-11-26, 7d
 
     section Faz 3 - CVE ve Risk
-    CVE/NVD API entegrasyonu                :f3a, 2026-12-10, 10d
-    Risk skorlama                           :f3b, after f3a, 5d
-    Çoklu hedef desteği ve optimizasyon     :f3c, after f3b, 5d
+    CVE/NVD API entegrasyonu                     :f3a, 2026-12-03, 7d
+    CVSS risk skorlama motoru                    :f3b, 2026-12-10, 7d
+    Çoklu hedef desteği ve optimizasyon          :f3c, 2026-12-17, 7d
 
     section Faz 4 - Arayüz ve Teslim
-    Web arayüzü (opsiyonel, Flask)          :f4a, 2026-12-30, 4d
-    Dokümantasyon ve final testleri         :f4b, 2026-12-27, 7d
-    Final sunum hazırlığı                   :milestone, f4c, 2027-01-04, 1d
+    Web arayüzü (opsiyonel, Flask)               :f4a, 2026-12-24, 7d
+    Dokümantasyon, final testleri ve teslim      :milestone, f4b, 2026-12-31, 7d
 ```
 
-## Görev Tablosu
+## Haftalık Toplantı ve Görev Tablosu (Her Perşembe Toplantı)
 
-| Faz | Görev | Başlangıç | Süre | Çıktı |
-|-----|-------|-----------|------|-------|
-| Planlama | Konu araştırması | 1 Eki | 10 gün | Zafiyet rehberi |
-| Planlama | Plan, Gantt, ön sunum | 1 Eki | 8 gün | Ön sunum |
-| Planlama | Ortam kurulumu | 8 Eki | 5 gün | Python, Git, DVWA hazır |
-| Faz 1 | Crawler | 13 Eki | 10 gün | URL/form listesi |
-| Faz 1 | SQLi modülü | 23 Eki | 10 gün | SQLi tespiti |
-| Faz 1 | XSS modülü | 2 Kas | 7 gün | XSS tespiti |
-| Faz 1 | CLI + test | 9 Kas | 5 gün | Faz 1 teslimi |
-| Faz 2 | Port tarama | 14 Kas | 10 gün | Açık port/servis listesi |
-| Faz 2 | Başlık analizi | 24 Kas | 5 gün | Eksik başlık raporu |
-| Faz 2 | Dizin tarama | 29 Kas | 7 gün | Dizin bulguları |
-| Faz 2 | HTML rapor | 6 Ara | 7 gün | Faz 2 teslimi |
-| Faz 3 | CVE entegrasyonu | 10 Ara | 10 gün | CVE eşleştirme |
-| Faz 3 | Risk skorlama | 20 Ara | 5 gün | Düşük/Orta/Yüksek/Kritik |
-| Faz 3 | Çoklu hedef | 25 Ara | 5 gün | Faz 3 teslimi |
-| Faz 4 | Arayüz (opsiyonel) | 30 Ara | 4 gün | Flask arayüzü |
-| Faz 4 | Dokümantasyon, test | 27 Ara | 7 gün | Final raporu |
+| Hafta | Tarih Aralığı | Perşembe Toplantı Tarihi | İş Paketi / Görev | Durum / Çıktı |
+|:---:|:---:|:---:|:---|:---|
+| **1. Hafta** | 1 – 8 Ekim 2026 | **8 Ekim 2026** | Konu araştırması, ön proje planı, ön sunum ve ortam kurulumu (Python, Git, DVWA) | **Tamamlandı** (Ön Sunum & Ön Rapor teslim edildi) |
+| **2. Hafta** | 8 – 15 Ekim 2026 | **15 Ekim 2026** | **Faz 1: Web Crawler İleri Geliştirmeleri** (BFS, `collections.deque`, `max_depth`, `InputField`, `ParamURL`, `robots.txt`, DVWA testleri) | **Tamamlandı** (2. Hafta Raporu & Sunumu hazır) |
+| **3. Hafta** | 15 – 22 Ekim 2026 | **22 Ekim 2026** | **Faz 1.2: SQL Injection (CWE-89) Tespit Modülü** (Hata tabanlı testler, regex veritabanı) | Sırada |
+| **4. Hafta** | 22 – 29 Ekim 2026 | **29 Ekim 2026** | **Faz 1.3: Cross-Site Scripting (CWE-79) Tespit Modülü** (Reflected & Stored XSS) | Planlandı |
+| **5. Hafta** | 29 Ekim – 5 Kasım | **5 Kasım 2026** | **Faz 1.4: CLI Arayüzü, Loglama ve Faz 1 Entegrasyon Testleri** | Planlandı |
+| **6. Hafta** | 5 – 12 Kasım 2026 | **12 Kasım 2026** | **Faz 2: Port Tarama ve Ağ Analiz Modülü** (python-nmap / socket) | Planlandı |
+| **7. Hafta** | 12 – 19 Kasım 2026 | **19 Kasım 2026** | **Faz 2.2: HTTP Güvenlik Başlıkları Analizi** (CSP, HSTS, X-Frame-Options) | Planlandı |
+| **8. Hafta** | 19 – 26 Kasım 2026 | **26 Kasım 2026** | **Faz 2.3: Dizin Tarama (Directory Listing) ve Hassas Dosya Keşfi** | Planlandı |
+| **9. Hafta** | 26 Kasım – 3 Aralık | **3 Aralık 2026** | **Faz 2.4: HTML Rapor Üretimi (Jinja2) ve Faz 2 Teslimi** | Planlandı |
+| **10. Hafta**| 3 – 10 Aralık 2026 | **10 Aralık 2026**| **Faz 3: CVE ve NVD API Entegrasyonu** (Zafiyet Eşleştirme) | Planlandı |
+| **11. Hafta**| 10 – 17 Aralık 2026| **17 Aralık 2026**| **Faz 3.2: CVSS Tabanlı Otomatik Risk Skorlama** | Planlandı |
+| **12. Hafta**| 17 – 24 Aralık 2026| **24 Aralık 2026**| **Faz 3.3: Çoklu Hedef Desteği ve Performans Optimizasyonu** | Planlandı |
+| **13. Hafta**| 24 – 31 Aralık 2026| **31 Aralık 2026**| **Faz 4: Web Arayüzü (Opsiyonel / Flask)** | Planlandı |
+| **14. Hafta**| 31 Aralık – 7 Ocak | **7 Ocak 2027**  | **Proje Final Raporu, Kapanış Sunumu ve Kod Teslimi** | Final Teslimi |
 
-> **Risk notu:** Zaman yetmezse Faz 4 (arayüz) ve Faz 3'teki çoklu hedef desteği çıkarılabilir. Çekirdek hedef Faz 1 ve Faz 2'dir.
+> **Risk Yönetimi:** Zaman kısıtı durumunda Faz 4 (Web Arayüzü) opsiyoneldir. Projenin çekirdek başarı kriteri Faz 1 ve Faz 2 iş paketleridir.

@@ -10,11 +10,12 @@ Sunumlar İçin Notlar/
 "Sunumlar İçin Notlar/"
 
 # Ödev raporları, sunum taslakları ve kurallar (Yalnızca yerelde kalacaklar)
-docs/kurallar.txt
-docs/on_proje_raporu.docx
-docs/on_proje_raporu.txt
-docs/generate_report_docx.py
-docs/ZafiyetTarayıcıÖnsunum.pdf
+docs/*.docx
+docs/*.doc
 docs/*.pdf
-docs/on_sunum.html
-docs/on_sunum_taslagi.md
+docs/*.html
+docs/*.txt
+docs/generate_*.py
+docs/*_taslagi.md
+docs/hafta*
+!docs/gantt_semasi.md
