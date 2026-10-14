@@ -1,89 +1,108 @@
-# Otomatik Zafiyet Tarayıcı
+# Otomatik Zafiyet Tarayıcı (Zaafiyet Tarayıcı)
 
-Hedef web uygulamalarında yaygın güvenlik zafiyetlerini otomatik tespit eden, bulguları risk seviyesiyle raporlayan ve düzeltme önerisi sunan Python tabanlı bir araçtır.
+Hedef web uygulamalarında yaygın güvenlik zafiyetlerini otomatik tespit eden, bulguları risk seviyesiyle raporlayan ve düzeltme önerisi sunan modüler, Python tabanlı bir güvenlik denetim aracıdır.
 
-> **Yasal uyarı:** Bu araç yalnızca sahibi olduğunuz veya yazılı izin aldığınız sistemlerde kullanılmalıdır. İzinsiz tarama yasa dışıdır. Geliştirme ve testler için DVWA ve OWASP Juice Shop gibi bilerek zafiyetli uygulamalar kullanın.
+> **Yasal Uyarı:** Bu araç yalnızca sahibi olduğunuz veya yazılı izin aldığınız sistemlerde (ve yerel laboratuvar ortamlarında) kullanılmalıdır. İzinsiz tarama yasa dışıdır (TCK 243-244).
 
-## Durum
-Planlama aşaması. Kod henüz yazılmadı. Takvim için [docs/gantt_semasi.md](docs/gantt_semasi.md), sunum için [docs/on_sunum_taslagi.md](docs/on_sunum_taslagi.md) dosyalarına bakın.
+---
 
-## Özellikler (Hedef)
-| Faz | Özellik | Durum |
-|-----|---------|-------|
-| 1 | Web crawler (link ve form keşfi) | Planlandı |
-| 1 | SQL Injection tespiti | Planlandı |
-| 1 | XSS tespiti | Planlandı |
-| 2 | Port tarama | Planlandı |
-| 2 | HTTP güvenlik başlığı analizi | Planlandı |
-| 2 | Dizin listeleme tespiti | Planlandı |
-| 2 | HTML rapor | Planlandı |
-| 3 | CVE/NVD eşleştirme ve risk skorlama | Planlandı |
-| 4 | Web arayüzü (opsiyonel) | Planlandı |
+## 🚀 Proje Durumu
+- **Aktif Faz:** **Faz 1 — Web Keşif Motoru (Crawler)** tamamlandı ve çalışır durumda.
+- **Takvim:** Proje 1 Ekim 2026'da başlamış olup haftalık Gantt iş takvimi için [docs/gantt_semasi.md](docs/gantt_semasi.md) dosyasına bakabilirsiniz.
 
-## Mimari
-```
-Hedef URL -> Crawler -> Tarama Modülleri -> Risk Skorlama -> Rapor
-```
+| Faz | Modül / Özellik | Durum |
+|:---:|:---|:---:|
+| **Faz 1.1** | **Gelişmiş Web Crawler (BFS, Derinlik Takibi, Form/Parametre Keşfi, robots.txt)** | ✅ **Tamamlandı (Çalışıyor)** |
+| **Faz 1.2** | SQL Injection Tespit Modülü (CWE-89) | ⏳ Sırada (15 - 22 Ekim) |
+| **Faz 1.3** | Cross-Site Scripting (XSS) Modülü (CWE-79) | ⏳ Planlandı (22 - 29 Ekim) |
+| **Faz 1.4** | CLI Çıktısı, Loglama ve Faz 1 Doğrulama | ✅ **Tamamlandı** |
+| **Faz 2** | Port Tarama ve HTTP Güvenlik Başlıkları Analizi | ⏳ Planlandı |
+| **Faz 3** | CVE/NVD Eşleştirme ve Risk Skorlama | ⏳ Planlandı |
+| **Faz 4** | Web Arayüzü (Opsiyonel / Flask) | ⏳ Planlandı |
 
-## Önerilen Dizin Yapısı
-```
-zafiyet-tarayici/
-├── main.py
-├── config.py
-├── requirements.txt
-├── scanner/
-│   ├── crawler.py
-│   ├── sqli_scanner.py
-│   ├── xss_scanner.py
-│   ├── port_scanner.py
-│   ├── header_analyzer.py
-│   ├── dir_scanner.py
-│   └── cve_checker.py
-├── reporter/
-│   ├── console_report.py
-│   ├── html_report.py
-│   └── templates/
-├── data/
-├── web/            # Faz 4 (opsiyonel)
-├── tests/
-└── docs/
-```
+---
 
-## Kurulum (Hedef)
+## 🛠️ Kurulum ve Çalıştırma
+
+Projeyi yerel ortamınıza çekip hemen çalıştırmak için aşağıdaki adımları izleyebilirsiniz:
+
+### 1. Repoyu Klonlayın
 ```bash
-git clone <repo-url>
-cd zafiyet-tarayici
+git clone https://github.com/mucoiks/ZaafiyetTarayici.git
+cd ZaafiyetTarayici
+```
+
+### 2. Sanal Ortamı (venv) Kurun ve Paketleri Yükleyin
+**Windows:**
+```cmd
 python -m venv venv
-venv\Scripts\activate        # Windows
+venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Başlangıç bağımlılıkları: `requests`, `beautifulsoup4`, `jinja2`, `python-nmap`.
-
-## Test Ortamı
-1. Docker kurun.
-2. DVWA'yı çalıştırın: `docker run --rm -p 8080:80 vulnerables/web-dvwa`
-3. Aracı yalnızca `http://localhost:8080` üzerinde deneyin.
-
-## Kullanım (Hedef Arayüz)
+**Linux / macOS:**
 ```bash
-python main.py --target http://localhost:8080 --modules sqli,xss --output rapor.html
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
-Henüz uygulanmadı; parametreler geliştirme sırasında değişebilir.
 
-## Geliştirme Kuralları
-- Her tarama modülü ortak bir arayüze uymalı (`scan(target) -> list[Finding]`).
-- Her bulgu: tür, URL, parametre, risk seviyesi, kanıt ve **düzeltme önerisi** içermeli.
-- İstekler `timeout` ile yapılmalı, hedefe aşırı yük bindirilmemeli (istek aralığı).
-- Her modül için DVWA üzerinde test yapılmalı.
+---
 
-## Kaynaklar
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [PortSwigger Web Security Academy](https://portswigger.net/web-security)
-- [NVD API](https://nvd.nist.gov/developers)
-- [DVWA](https://github.com/digininja/DVWA)
+## 💻 Kullanım Örnekleri
 
-## Ekip
-- Mücahit Haşim İPEK (1230606809)
-- Necat Akyüz (1220606005)
-- Danışman: Prof. Dr. Ercan BULUŞ
+### Yöntem 1: Tek Tıkla Başlatıcı (Windows İçin `tara.bat`)
+Windows kullanıcıları komut yazmadan doğrudan `tara.bat` dosyasını çalıştırabilir veya çift tıklayabilir:
+```cmd
+tara.bat
+```
+
+### Yöntem 2: Komut Satırı (CLI)
+
+**Herhangi bir hedef web sitesini taramak:**
+```bash
+python main.py --target http://testphp.vulnweb.com --max-depth 2 --max-pages 30
+```
+
+**Yerel DVWA laboratuvarını otomatik oturum açarak taramak:**
+```bash
+python main.py --target http://localhost:8080 --dvwa-login --max-depth 3
+```
+
+**Harici oturum çerezi (Cookie) ile yetkili tarama yapmak:**
+```bash
+python main.py --target https://hedef-site.local --cookie "PHPSESSID=abc123xyz; security=low"
+```
+
+---
+
+## ⚙️ Komut Satırı Parametreleri
+
+| Parametre | Varsayılan | Açıklama |
+|---|---|---|
+| `--target` | *Zorunlu* | Taranacak hedef URL adresi. |
+| `--max-depth` | `3` | BFS genişlik öncelikli arama derinlik sınırı (sonsuz döngüleri engeller). |
+| `--max-pages` | `50` | Taranacak maksimum sayfa sayısı üst limiti. |
+| `--dvwa-login` | `False` | DVWA test ortamına otomatik `admin:password` ile giriş yapıp çerezi kullanır. |
+| `--cookie` | `None` | Giriş yapılmış oturum çerezi dizesi (`"name=val; name2=val2"`). |
+| `--output` | `logs/[hedef]_[zaman].txt` | Tarama bulgularının kaydedileceği dosya yolu. |
+
+---
+
+## 🧪 Test Ortamı (DVWA)
+1. Docker yüklüyse DVWA konteynerini başlatın:
+   ```bash
+   docker run --rm -p 8080:80 vulnerables/web-dvwa
+   ```
+2. Tarayıcıda `http://localhost:8080/setup.php` sayfasına gidip **"Create / Reset Database"** butonuna tıklayın.
+3. Tarayıcıyı çalıştırın:
+   ```bash
+   python main.py --target http://localhost:8080 --dvwa-login
+   ```
+
+---
+
+## 👥 Ekip
+- **Mücahit Haşim İPEK** (1230606809)
+- **Necat AKYÜZ** (1220606005)
+- **Ders Danışmanı:** Prof. Dr. Ercan BULUŞ
