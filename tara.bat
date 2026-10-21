@@ -1,12 +1,9 @@
 @echo off
+chcp 65001 >nul
+set PYTHONUTF8=1
 setlocal
 cd /d "%~dp0"
-title Otomatik Zafiyet Tarayici
-
-echo ============================================================
-echo           OTOMATIK ZAFIYET TARAYICI - WEB CRAWLER
-echo ============================================================
-echo.
+title Otomatik Zafiyet Tarayici - Ana Menu
 
 :: 1. venv klasorunde python.exe var mi?
 if exist "%~dp0venv\Scripts\python.exe" (
@@ -60,49 +57,6 @@ set "PY_CMD=%~dp0venv\Scripts\python.exe"
 goto PYTHON_HAZIR
 
 :PYTHON_HAZIR
-echo.
-set "target_url="
-set /p "target_url=Taranacak site adresi (Varsayilan: http://localhost:8080): "
-
-if not defined target_url set "target_url=http://localhost:8080"
-if "%target_url%"=="" set "target_url=http://localhost:8080"
-
-echo.
-echo Tarama Turu:
-echo   [1] Standart Tarama (Oturum / Giris yok)
-echo   [2] DVWA Test Ortami (Otomatik Girisli)
-echo   [3] Ozel Cookie ile Tara
-echo.
-
-set "secim="
-set /p "secim=Seciminiz (1, 2 veya 3 - Varsayilan: 2): "
-
-if not defined secim set "secim=2"
-if "%secim%"=="" set "secim=2"
-
-echo.
-echo [*] Hedef: %target_url%
-echo ------------------------------------------------------------
-
-if "%secim%"=="1" (
-    "%PY_CMD%" "%~dp0main.py" --target "%target_url%"
-    goto SON
-)
-
-if "%secim%"=="3" (
-    set "cookie_val="
-    set /p "cookie_val=Cookie degeri (Orn: PHPSESSID=xyz): "
-    "%PY_CMD%" "%~dp0main.py" --target "%target_url%" --cookie "%cookie_val%"
-    goto SON
-)
-
-:: Varsayilan secenek: 2 (DVWA)
-"%PY_CMD%" "%~dp0main.py" --target "%target_url%" --dvwa-login
-
-:SON
-echo.
-echo ------------------------------------------------------------
-echo [+] Islem tamamlandi! Sonuclar 'logs' klasorune kaydedildi.
-echo ------------------------------------------------------------
+"%PY_CMD%" "%~dp0main.py"
 echo.
 pause

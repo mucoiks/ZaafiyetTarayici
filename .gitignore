@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .env
 *.db
+*.exe
 
 # Gizli ve yerel tutulacak klasörler
 logs/

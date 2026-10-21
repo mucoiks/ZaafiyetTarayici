@@ -60,6 +60,17 @@ class ParamURL:
         return self.full_url
 
 
+# Normal gezinme sırasında sayfada açık unutulmuş veritabanı hata izleri (Pasif CWE-209 kontrolü)
+PASSIVE_DB_ERROR_PATTERNS = {
+    "MySQL / MariaDB": ("you have an error in your sql syntax", "mysql_fetch", "warning: mysql"),
+    "PostgreSQL": ("postgresql query failed", "pg_query()", "unterminated quoted string at or near"),
+    "Microsoft SQL Server": ("unclosed quotation mark after the character string", "microsoft ole db provider for sql server"),
+    "SQLite": ("sqlite3::SQLException", "sqlite_error", "unrecognized token:"),
+    "Oracle": ("ora-00933", "ora-01756", "quoted string not properly terminated"),
+    "Genel PDO / Veritabanı": ("pdoexception", "sqlstate["),
+}
+
+
 @dataclass
 class PageInfo:
     """Taranan sayfanın HTTP yanıt ve derinlik bilgileri."""
@@ -68,6 +79,7 @@ class PageInfo:
     content_type: str
     depth: int
     headers: dict = field(default_factory=dict)
+    passive_db_errors: list = field(default_factory=list)
 
     def __str__(self):
         return self.url
@@ -187,6 +199,17 @@ class Crawler:
         params = dict(parse_qsl(parsed.query))
         return ParamURL(url=base, full_url=url, params=params)
 
+    def _detect_passive_db_errors(self, html_text):
+        """Normal gezinme sırasında sayfa içeriğinde açık unutulmuş veritabanı hata izlerini pasif olarak tespit eder."""
+        found = []
+        lower_html = html_text.lower()
+        for db_name, patterns in PASSIVE_DB_ERROR_PATTERNS.items():
+            for pat in patterns:
+                if pat.lower() in lower_html:
+                    found.append(f"{db_name} ({pat})")
+                    break
+        return found
+
     def crawl(self, start_url=None):
         """BFS algoritması ve derinlik kontrolü ile siteyi haritalandırır."""
         start = start_url or self.base_url
@@ -222,7 +245,8 @@ class Crawler:
                 status_code=resp.status_code,
                 content_type=ctype,
                 depth=depth,
-                headers=dict(resp.headers)
+                headers=dict(resp.headers),
+                passive_db_errors=self._detect_passive_db_errors(resp.text)
             )
             result.pages.append(page_info)
 
