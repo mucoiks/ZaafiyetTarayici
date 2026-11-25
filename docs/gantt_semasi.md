@@ -45,9 +45,9 @@ gantt
 |:---:|:---:|:---:|:---|:---|
 | **1. Hafta** | 1 – 8 Ekim 2026 | **8 Ekim 2026** | Konu araştırması, ön proje planı, ön sunum ve ortam kurulumu (Python, Git, DVWA) | **Tamamlandı** (Ön Sunum & Ön Rapor teslim edildi) |
 | **2. Hafta** | 8 – 15 Ekim 2026 | **15 Ekim 2026** | **Faz 1: Web Crawler İleri Geliştirmeleri** (BFS, `collections.deque`, `max_depth`, `InputField`, `ParamURL`, `robots.txt`, DVWA testleri) | **Tamamlandı** (2. Hafta Raporu & Sunumu hazır) |
-| **3. Hafta** | 15 – 22 Ekim 2026 | **22 Ekim 2026** | **Faz 1.2: SQL Injection (CWE-89) Tespit Modülü** (Hata tabanlı testler, regex veritabanı) | Sırada |
-| **4. Hafta** | 22 – 29 Ekim 2026 | **29 Ekim 2026** | **Faz 1.3: Cross-Site Scripting (CWE-79) Tespit Modülü** (Reflected & Stored XSS) | Planlandı |
-| **5. Hafta** | 29 Ekim – 5 Kasım | **5 Kasım 2026** | **Faz 1.4: CLI Arayüzü, Loglama ve Faz 1 Entegrasyon Testleri** | Planlandı |
+| **3. Hafta** | 15 – 22 Ekim 2026 | **22 Ekim 2026** | **Faz 1.2: Hibrit SQL Injection (CWE-89) ve SAST Modülü** (Pasif Web Denetimi + Statik Kod Analizi) | **Tamamlandı** (3. Hafta Sunumu hazır) |
+| **4. Hafta** | 22 – 29 Ekim 2026 | **29 Ekim 2026** | **Faz 1.3: Tam Adres Haritalama, Dinamik Input Keşfi (SPA/Login), Otomatik İstek (`InputRequester`) ve Web Arayüzü (`web_app.py`)** | **Tamamlandı** (4. Hafta Sunumu & Web Arayüzü hazır) |
+| **5. Hafta** | 29 Ekim – 5 Kasım | **5 Kasım 2026** | **Faz 1.4: Cross-Site Scripting (CWE-79) Denetim Modülü ve Faz 1 Entegrasyonu** | Sırada |
 | **6. Hafta** | 5 – 12 Kasım 2026 | **12 Kasım 2026** | **Faz 2: Port Tarama ve Ağ Analiz Modülü** (python-nmap / socket) | Planlandı |
 | **7. Hafta** | 12 – 19 Kasım 2026 | **19 Kasım 2026** | **Faz 2.2: HTTP Güvenlik Başlıkları Analizi** (CSP, HSTS, X-Frame-Options) | Planlandı |
 | **8. Hafta** | 19 – 26 Kasım 2026 | **26 Kasım 2026** | **Faz 2.3: Dizin Tarama (Directory Listing) ve Hassas Dosya Keşfi** | Planlandı |

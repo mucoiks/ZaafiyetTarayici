@@ -1,0 +1,1 @@
+Eğer ödevine yapay zeka destekli tespit eklemek istersen: Bu CSV dosyasını tam olarak asıl amacı olan TF-IDF + Random Forest / Logistic Regression gibi bir model eğitip, gelen veya giden isteklerin zararlı olup olmadığını sınıflandırmak için doğrudan kullanabilirsin.
